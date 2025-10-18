@@ -15,16 +15,9 @@ let package = Package(
     products: [
         .library(name: "Money", targets: ["Money"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/SimplyDanny/SwiftLintPlugins.git", exact: "0.59.1"),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", exact: "1.18.6"),
-    ],
     targets: [
         .target(name: "Money"),
-        .testTarget(name: "MoneyTests", dependencies: [
-            "Money",
-            .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
-        ]),
+        .testTarget(name: "MoneyTests", dependencies: ["Money"]),
     ]
 )
 
@@ -34,9 +27,4 @@ for target in package.targets where target.type != .system {
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
     ])
-
-    target.plugins = target.plugins ?? []
-    target.plugins?.append(
-        .plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")
-    )
 }
