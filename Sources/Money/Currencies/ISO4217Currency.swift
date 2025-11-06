@@ -798,7 +798,7 @@ extension ISO4217Currency {
     /// This initializer first checks predefined ISO 4217 currencies, then checks any registered custom currencies.
     ///
     /// - Parameter alphabeticCode: The alphabetic ISO 4217 currency code
-    init?(alphabeticCode: String, using registry: ISO4217CurrencyRegistry = Self.registry) {
+    public init?(alphabeticCode: String, using registry: ISO4217CurrencyRegistry = Self.registry) {
         guard let currency = registry.currency(forAlphabeticCode: alphabeticCode) else {
             return nil
         }
@@ -811,7 +811,7 @@ extension ISO4217Currency {
     /// This initializer first checks predefined ISO 4217 currencies, then checks any registered custom currencies.
     ///
     /// - Parameter numericCode: The numeric ISO 4217 currency code
-    init?(numericCode: String, using registry: ISO4217CurrencyRegistry = Self.registry) {
+    public init?(numericCode: String, using registry: ISO4217CurrencyRegistry = Self.registry) {
         guard let currency = registry.currency(forNumericCode: numericCode) else {
             return nil
         }

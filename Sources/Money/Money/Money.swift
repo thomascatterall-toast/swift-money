@@ -47,6 +47,22 @@ public struct Money: Sendable {
 
         self.init(amount: amount, currency: currency)
     }
+
+    /// Attempts to create a monetary value from the provided aggregated money.
+    ///
+    /// - Warning: This initializer will return `nil` in the event that the number of currencies in the
+    /// aggregate is not exactly equal to one.
+    public init?(aggregatedMoney: AggregatedMoney) {
+        guard
+            let currency = aggregatedMoney.currencies.first,
+            aggregatedMoney.currencies.count == 1,
+            let amount: Decimal = aggregatedMoney[currency]
+        else {
+            return nil
+        }
+
+        self = Money(amount: amount, currency: currency)
+    }
 }
 
 // MARK: - Money + CustomStringConvertible
@@ -79,12 +95,12 @@ extension Money: Equatable {
 
 // MARK: - Money + Rounding
 
-public extension Money {
+extension Money {
     /// A rounded version of the monetary value using the value's `currency`.
     ///
     /// - Important: If no scale is provided, the currency's minor units are used.
     @inlinable
-    func rounded(
+    public func rounded(
         scale: Int? = nil,
         mode: NSDecimalNumber.RoundingMode = .bankers
     ) -> Self {
@@ -97,7 +113,7 @@ public extension Money {
     ///
     /// - Important: If no scale is provided, the currency's minor units are used.
     @inlinable
-    mutating func round(
+    public mutating func round(
         scale: Int? = nil,
         mode: NSDecimalNumber.RoundingMode = .bankers
     ) {
@@ -110,7 +126,7 @@ public extension Money {
 
 // MARK: - Money + Conversion
 
-public extension Money {
+extension Money {
     /// A monetary value converted to the provided base `Currency` using the specified `rate`.
     ///
     /// - Important: The currency passed as a parameter is considered the `base` currency
@@ -134,7 +150,7 @@ public extension Money {
     /// print(sterling.amount) // 4.0
     /// ```
     @inlinable
-    func converted(
+    public func converted(
         to base: some Currency,
         rate: Decimal
     ) -> Self {
@@ -167,7 +183,7 @@ public extension Money {
     /// print(sterling.amount) // 4.0
     /// ```
     @inlinable
-    mutating func convert(
+    public mutating func convert(
         to currency: some Currency,
         rate: Decimal
     ) {
@@ -177,12 +193,12 @@ public extension Money {
 
 // MARK: - Money + Arithmetic
 
-public extension Money {
+extension Money {
     // MARK: Addition
 
     /// The sum of a monetary value and a decimal amount.
     @inlinable
-    static func + (lhs: Self, rhs: Decimal) -> Self {
+    public static func + (lhs: Self, rhs: Decimal) -> Self {
         var copy = lhs
         copy.amount = lhs.amount + rhs
         return copy
@@ -190,13 +206,13 @@ public extension Money {
 
     /// The sum of a decimal amount and a monetary value.
     @inlinable
-    static func + (lhs: Decimal, rhs: Self) -> Self {
+    public static func + (lhs: Decimal, rhs: Self) -> Self {
         rhs + lhs
     }
 
     /// The sum of a monetary value and an integer amount.
     @inlinable
-    static func + (lhs: Self, rhs: some BinaryInteger) -> Self {
+    public static func + (lhs: Self, rhs: some BinaryInteger) -> Self {
         guard let rhs = Decimal(exactly: rhs) else {
             assertionFailure("Unable to convert \(rhs) to Decimal")
             return Money(amount: .nan, currency: lhs.currency)
@@ -207,25 +223,25 @@ public extension Money {
 
     /// The sum of an integer amount and a monetary value.
     @inlinable
-    static func + (lhs: some BinaryInteger, rhs: Self) -> Self {
+    public static func + (lhs: some BinaryInteger, rhs: Self) -> Self {
         rhs + lhs
     }
 
     /// The aggregated monetary sum of two monetary values.
     @inlinable
-    static func + (lhs: Self, rhs: Self) -> AggregatedMoney {
+    public static func + (lhs: Self, rhs: Self) -> AggregatedMoney {
         AggregatedMoney(money: lhs) + rhs
     }
 
     /// Adds a decimal amount to a monetary amount.
     @inlinable
-    static func += (lhs: inout Self, rhs: Decimal) {
+    public static func += (lhs: inout Self, rhs: Decimal) {
         lhs = lhs + rhs
     }
 
     /// Adds an integer amount to a monetary amount.
     @inlinable
-    static func += (lhs: inout Self, rhs: some BinaryInteger) {
+    public static func += (lhs: inout Self, rhs: some BinaryInteger) {
         lhs = lhs + rhs
     }
 
@@ -233,7 +249,7 @@ public extension Money {
 
     /// The difference of a monetary value and a decimal amount.
     @inlinable
-    static func - (lhs: Self, rhs: Decimal) -> Self {
+    public static func - (lhs: Self, rhs: Decimal) -> Self {
         var copy = lhs
         copy.amount = lhs.amount - rhs
         return copy
@@ -241,13 +257,13 @@ public extension Money {
 
     /// The difference of a decimal amount and a monetary value.
     @inlinable
-    static func - (lhs: Decimal, rhs: Self) -> Self {
+    public static func - (lhs: Decimal, rhs: Self) -> Self {
         lhs + -rhs
     }
 
     /// The difference of a monetary value and an integer amount.
     @inlinable
-    static func - (lhs: Self, rhs: some BinaryInteger) -> Self {
+    public static func - (lhs: Self, rhs: some BinaryInteger) -> Self {
         guard let rhs = Decimal(exactly: rhs) else {
             assertionFailure("Unable to convert \(rhs) to Decimal")
             return Money(amount: .nan, currency: lhs.currency)
@@ -258,7 +274,7 @@ public extension Money {
 
     /// The difference of an integer amount and a monetary value.
     @inlinable
-    static func - (lhs: some BinaryInteger, rhs: Self) -> Self {
+    public static func - (lhs: some BinaryInteger, rhs: Self) -> Self {
         guard let lhs = Decimal(exactly: lhs) else {
             assertionFailure("Unable to convert \(rhs) to Decimal")
             return Money(amount: .nan, currency: rhs.currency)
@@ -269,19 +285,19 @@ public extension Money {
 
     /// The aggregated monetary difference of two monetary values.
     @inlinable
-    static func - (lhs: Self, rhs: Self) -> AggregatedMoney {
+    public static func - (lhs: Self, rhs: Self) -> AggregatedMoney {
         AggregatedMoney(money: lhs) - rhs
     }
 
     /// Subtracts a decimal amount from a monetary amount.
     @inlinable
-    static func -= (lhs: inout Self, rhs: Decimal) {
+    public static func -= (lhs: inout Self, rhs: Decimal) {
         lhs = lhs - rhs
     }
 
     /// Subtracts an integer amount from a monetary amount.
     @inlinable
-    static func -= (lhs: inout Self, rhs: some BinaryInteger) {
+    public static func -= (lhs: inout Self, rhs: some BinaryInteger) {
         lhs = lhs - rhs
     }
 
@@ -289,7 +305,7 @@ public extension Money {
 
     /// The product of a monetary value and a scalar value.
     @inlinable
-    static func * (lhs: Self, rhs: Decimal) -> Self {
+    public static func * (lhs: Self, rhs: Decimal) -> Self {
         var copy = lhs
         copy.amount = lhs.amount * rhs
         return copy
@@ -297,13 +313,13 @@ public extension Money {
 
     /// The product of a scalar value and a monetary value.
     @inlinable
-    static func * (lhs: Decimal, rhs: Self) -> Self {
+    public static func * (lhs: Decimal, rhs: Self) -> Self {
         rhs * lhs
     }
 
     /// The product of a monetary value and a scalar value.
     @inlinable
-    static func * (lhs: Self, rhs: some BinaryInteger) -> Self {
+    public static func * (lhs: Self, rhs: some BinaryInteger) -> Self {
         guard let rhs = Decimal(exactly: rhs) else {
             assertionFailure("Unable to convert \(rhs) to Decimal")
             return Money(amount: .nan, currency: lhs.currency)
@@ -314,19 +330,19 @@ public extension Money {
 
     /// The product of a scalar value and a monetary value.
     @inlinable
-    static func * (lhs: some BinaryInteger, rhs: Self) -> Self {
+    public static func * (lhs: some BinaryInteger, rhs: Self) -> Self {
         rhs * lhs
     }
 
     /// Multiplies a monetary value by a scalar value.
     @inlinable
-    static func *= (lhs: inout Self, rhs: Decimal) {
+    public static func *= (lhs: inout Self, rhs: Decimal) {
         lhs = lhs * rhs
     }
 
     /// Multiplies a monetary value by a scalar value.
     @inlinable
-    static func *= (lhs: inout Self, rhs: some BinaryInteger) {
+    public static func *= (lhs: inout Self, rhs: some BinaryInteger) {
         lhs = lhs * rhs
     }
 
@@ -334,7 +350,7 @@ public extension Money {
 
     /// The quotient of a monetary value and a scalar value.
     @inlinable
-    static func / (lhs: Self, rhs: Decimal) -> Self {
+    public static func / (lhs: Self, rhs: Decimal) -> Self {
         var copy = lhs
         copy.amount = lhs.amount / rhs
         return copy
@@ -342,7 +358,7 @@ public extension Money {
 
     /// The quotient of a scalar value and a monetary value.
     @inlinable
-    static func / (lhs: Decimal, rhs: Self) -> Self {
+    public static func / (lhs: Decimal, rhs: Self) -> Self {
         var copy = rhs
         copy.amount = lhs / rhs.amount
         return copy
@@ -350,7 +366,7 @@ public extension Money {
 
     /// The quotient of a monetary value and a scalar value.
     @inlinable
-    static func / (lhs: Self, rhs: some BinaryInteger) -> Self {
+    public static func / (lhs: Self, rhs: some BinaryInteger) -> Self {
         guard let rhs = Decimal(exactly: rhs) else {
             assertionFailure("Unable to convert \(rhs) to Decimal")
             return Money(amount: .nan, currency: lhs.currency)
@@ -361,7 +377,7 @@ public extension Money {
 
     /// The quotient of a scalar value and a monetary value.
     @inlinable
-    static func / (lhs: some BinaryInteger, rhs: Self) -> Self {
+    public static func / (lhs: some BinaryInteger, rhs: Self) -> Self {
         guard let lhs = Decimal(exactly: lhs) else {
             assertionFailure("Unable to convert \(rhs) to Decimal")
             return Money(amount: .nan, currency: rhs.currency)
@@ -372,20 +388,20 @@ public extension Money {
 
     /// Divides a monetary value by a scalar value.
     @inlinable
-    static func /= (lhs: inout Self, rhs: Decimal) {
+    public static func /= (lhs: inout Self, rhs: Decimal) {
         lhs = lhs / rhs
     }
 
     /// Divides a monetary value by a scalar value.
     @inlinable
-    static func /= (lhs: inout Self, rhs: some BinaryInteger) {
+    public static func /= (lhs: inout Self, rhs: some BinaryInteger) {
         lhs = lhs / rhs
     }
 
     // MARK: Negation
 
     @inlinable
-    static prefix func - (value: Self) -> Self {
+    public static prefix func - (value: Self) -> Self {
         var copy = value
         copy.amount = -copy.amount
         return copy

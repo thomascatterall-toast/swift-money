@@ -48,6 +48,30 @@ struct MoneyTests {
         #expect(biz1 == biz2)
     }
 
+    @Test
+    func money_initializedThroughAggregateWithSingleCurrency_arEqual() {
+        let expected = Money(amount: 10, currency: .foo)
+        let aggregatedMoney = AggregatedMoney(money: expected)
+        let money = Money(aggregatedMoney: aggregatedMoney)
+        #expect(money == expected)
+    }
+
+    @Test
+    func money_initializedThroughEmptyAggregate_isNil() {
+        let aggregatedMoney = AggregatedMoney([])
+        let money = Money(aggregatedMoney: aggregatedMoney)
+        #expect(money == nil)
+    }
+
+    @Test
+    func money_initializedThroughMultipleAggregate_isNil() {
+        let aggregatedMoney = AggregatedMoney(
+            money: Money(amount: 1, currency: .foo), Money(amount: 2, currency: .bar)
+        )
+        let money = Money(aggregatedMoney: aggregatedMoney)
+        #expect(money == nil)
+    }
+
     // MARK: Equatable Tests
 
     @Test

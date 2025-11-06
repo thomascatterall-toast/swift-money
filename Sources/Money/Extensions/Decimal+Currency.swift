@@ -5,7 +5,7 @@ extension Decimal {
     ///
     /// - Important: If no scale is provided, the currency's minor units are used.
     @inlinable
-    func rounded(
+    public func rounded(
         for currency: some Currency,
         scale: Int? = nil,
         mode: NSDecimalNumber.RoundingMode = .bankers
