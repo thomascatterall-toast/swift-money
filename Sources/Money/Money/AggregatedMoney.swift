@@ -50,7 +50,7 @@ public struct AggregatedMoney {
 
     /// An array of all of the currencies represented within the aggregated
     /// monetary value.
-    var currencies: [any Currency] {
+    public var currencies: [any Currency] {
         amounts.keys.map { $0.currency }
     }
 
@@ -99,6 +99,7 @@ public struct AggregatedMoney {
 
     /// Creates an aggregated monetary value with an amount equal to the summation of all of the
     /// aggregated monetary values in the provided sequence.
+    @_disfavoredOverload
     public init<S: Sequence<Self>>(_ s: S) {
         self.amounts = s.reduce(into: [:]) { amounts, aggregatedMoney in
             amounts = aggregatedMoney.amounts.reduce(
