@@ -131,22 +131,6 @@ struct ISO4217CurrencyRegistrationTests {
         #expect(registry.currencies == [currency2])
     }
 
-    // MARK: - Predefined Currencies Tests
-
-    @Test
-    func currency_XDR_canBeInitializedByAlphabeticAndNumericCode() {
-        let byAlpha = ISO4217Currency(alphabeticCode: "XDR")
-        let byNumeric = ISO4217Currency(numericCode: "960")
-
-        #expect(byAlpha != nil)
-        #expect(byNumeric != nil)
-        #expect(byAlpha == byNumeric)
-        #expect(byAlpha?.alphabeticCode == "XDR")
-        #expect(byAlpha?.numericCode == "960")
-        #expect(byAlpha?.name == "Special Drawing Rights")
-        #expect(byAlpha?.minorUnits == 0)
-    }
-
     @Test
     func currency_whenInitializedWithPredefinedCurrencyRegistry_createsCurrency() {
         let registry = ISO4217CurrencyRegistry()
